@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="format-detection" content="telephone=no" />
+  <title>学习小工具</title>
+  <link rel="stylesheet" href="./styles/app.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <main class="app-card">
+      <section id="startPage" class="page is-active">
+        <header class="hero">
+          <p class="eyebrow">数学口算练习</p>
+          <h1>学习小工具</h1>
+          <p class="hero-copy">支持 100 题闯关、3 分钟单人限时和 3 分钟双人模式。答题进度会自动保存，刷新后也能继续。</p>
+        </header>
+
+        <div class="settings-grid">
+          <section class="panel">
+            <div class="panel-head">
+              <h2>选择玩法</h2>
+              <span>开始前可切换</span>
+            </div>
+            <div class="choice-grid">
+              <label class="choice-card">
+                <input type="radio" name="mode" value="classic" checked />
+                <span class="choice-body">
+                  <strong>100题闯关</strong>
+                  <small>做完 100 题后结算用时、答对和答错数量。</small>
+                </span>
+              </label>
+
+              <label class="choice-card">
+                <input type="radio" name="mode" value="soloTimed" />
+                <span class="choice-body">
+                  <strong>单人限时 3 分钟</strong>
+                  <small>3 分钟内尽量多做，时间到自动结算。</small>
+                </span>
+              </label>
+
+              <label class="choice-card">
+                <input type="radio" name="mode" value="duoTimed" />
+                <span class="choice-body">
+                  <strong>双人限时 3 分钟</strong>
+                  <small>一个小朋友拿着 iPad 看题目和答案，判断对错后点一下 √ 或 ×，就会自动出下一题。</small>
+                </span>
+              </label>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-head">
+              <h2>选择难度</h2>
+              <span>加减法范围</span>
+            </div>
+            <div class="choice-grid">
+              <label class="choice-card choice-card--easy">
+                <input type="radio" name="difficulty" value="easy" checked />
+                <span class="choice-body">
+                  <strong>简单</strong>
+                  <small>20 以内加减法</small>
+                </span>
+              </label>
+
+              <label class="choice-card choice-card--medium">
+                <input type="radio" name="difficulty" value="medium" />
+                <span class="choice-body">
+                  <strong>中等</strong>
+                  <small>50 以内加减法</small>
+                </span>
+              </label>
+
+              <label class="choice-card choice-card--hard">
+                <input type="radio" name="difficulty" value="hard" />
+                <span class="choice-body">
+                  <strong>困难</strong>
+                  <small>100 以内加减法</small>
+                </span>
+              </label>
+            </div>
+          </section>
+        </div>
+
+        <section class="start-bar">
+          <div id="startSummary" class="summary-chip">当前：100题闯关 · 简单（20以内）</div>
+          <button id="startBtn" class="primary-button" type="button">开始答题</button>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <h2>最近一个月记录</h2>
+            <span>自动保留 30 天</span>
+          </div>
+          <div id="historyEmpty" class="empty-state">还没有历史记录，开始第一局吧。</div>
+          <div id="historyList" class="stack-list"></div>
+        </section>
+      </section>
+
+      <section id="quizPage" class="page">
+        <div class="quiz-header">
+          <div class="quiz-header__main">
+            <div id="modeBadge" class="mode-pill">100题闯关 · 简单</div>
+            <div id="progressText" class="progress-line">第 1 / 100 题</div>
+          </div>
+          <div id="timerBox" class="timer-box">
+            <span id="timerLabel" class="timer-label">已用时间</span>
+            <strong id="timerText" class="timer-value">00:00</strong>
+          </div>
+        </div>
+
+        <p id="statusText" class="status-text">这局会自动保存，不小心刷新了也可以接着继续。</p>
+
+        <section class="question-card">
+          <span id="questionLabel" class="question-label">题目</span>
+          <div id="questionText" class="question-text">12 + 8</div>
+          <div id="answerPanel" class="answer-panel hidden">
+            <span class="answer-label">答案</span>
+            <strong id="answerText" class="answer-text">20</strong>
+          </div>
+        </section>
+
+        <section id="inputSection" class="panel quiz-panel">
+          <div class="input-head">
+            <span>当前输入</span>
+            <strong id="inputValue" class="input-value">-</strong>
+          </div>
+          <div id="keyboard" class="keyboard"></div>
+        </section>
+
+        <section id="judgeSection" class="panel quiz-panel hidden">
+          <p class="judge-tip">拿着 iPad 的小朋友看题目和答案，帮忙判断对错，点一下 √ 或 × 就会自动进入下一题。</p>
+          <div class="judge-buttons">
+            <button id="markCorrectBtn" class="judge-button judge-button--correct" type="button">√ 答对</button>
+            <button id="markWrongBtn" class="judge-button judge-button--wrong" type="button">× 答错</button>
+          </div>
+        </section>
+
+        <div class="quiz-actions">
+          <button id="abandonBtn" class="text-button" type="button">放弃本局</button>
+        </div>
+      </section>
+
+      <section id="resultPage" class="page">
+        <header class="result-hero">
+          <p class="eyebrow">本局完成</p>
+          <h2 id="resultTitle">100题闯关完成</h2>
+          <p id="resultMeta" class="result-meta">简单（20以内）加减法 · 正确率 100%</p>
+        </header>
+
+        <section class="stats-grid">
+          <article class="stat-card">
+            <span>答题数</span>
+            <strong id="statAnswered">100</strong>
+          </article>
+          <article class="stat-card">
+            <span>答对</span>
+            <strong id="statCorrect">96</strong>
+          </article>
+          <article class="stat-card">
+            <span>答错</span>
+            <strong id="statWrong">4</strong>
+          </article>
+          <article class="stat-card">
+            <span>用时</span>
+            <strong id="statDuration">3分00秒</strong>
+          </article>
+        </section>
+
+        <div class="result-actions">
+          <button id="playAgainBtn" class="primary-button" type="button">再来一局</button>
+          <button id="backHomeBtn" class="secondary-button" type="button">返回首页</button>
+          <button id="toggleReviewBtn" class="text-button" type="button">查看本局详情</button>
+        </div>
+
+        <section id="reviewSection" class="panel hidden">
+          <div class="panel-head">
+            <h2>本局详情</h2>
+            <span id="reviewHint">共 100 题</span>
+          </div>
+          <div id="reviewList" class="stack-list"></div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <h2>最近一个月记录</h2>
+            <span>已自动保存</span>
+          </div>
+          <div id="resultHistoryEmpty" class="empty-state">还没有历史记录。</div>
+          <div id="resultHistoryList" class="stack-list"></div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <span>学习小工具</span>
+      <a
+        href="https://beian.miit.gov.cn/"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="备案信息查询"
+      >
+        粤ICP备XXXXXXXX号
+      </a>
+      <span class="site-footer__hint">上线后请替换成备案成功后拿到的真实编号</span>
+    </div>
+  </footer>
+
+  <script src="./scripts/config.js"></script>
+  <script src="./scripts/questions.js"></script>
+  <script src="./scripts/storage.js"></script>
+  <script src="./scripts/app.js"></script>
+</body>
+</html>
