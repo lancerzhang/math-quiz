@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="format-detection" content="telephone=no" />
   <title>学习小工具</title>
@@ -115,7 +115,11 @@
 
         <section class="question-card">
           <span id="questionLabel" class="question-label">题目</span>
-          <div id="questionText" class="question-text">12 + 8</div>
+          <div class="question-line">
+            <span id="questionText" class="question-text">12 + 8</span>
+            <span id="answerEquals" class="answer-equals">=</span>
+            <strong id="inputValue" class="input-value question-answer">-</strong>
+          </div>
           <div id="answerPanel" class="answer-panel hidden">
             <span class="answer-label">答案</span>
             <strong id="answerText" class="answer-text">20</strong>
@@ -125,7 +129,7 @@
         <section id="inputSection" class="panel quiz-panel">
           <div class="input-head">
             <span>当前输入</span>
-            <strong id="inputValue" class="input-value">-</strong>
+            <strong class="input-value">-</strong>
           </div>
           <div id="keyboard" class="keyboard"></div>
         </section>
@@ -139,6 +143,7 @@
         </section>
 
         <div class="quiz-actions">
+          <button id="prevBtn" class="secondary-button quiz-prev-button" type="button">上一题</button>
           <button id="abandonBtn" class="text-button" type="button">放弃本局</button>
         </div>
       </section>

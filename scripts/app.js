@@ -33,14 +33,16 @@
     timerText: document.getElementById("timerText"),
     statusText: document.getElementById("statusText"),
     questionText: document.getElementById("questionText"),
+    answerEquals: document.getElementById("answerEquals"),
     answerPanel: document.getElementById("answerPanel"),
     answerText: document.getElementById("answerText"),
     inputSection: document.getElementById("inputSection"),
-    inputValue: document.getElementById("inputValue"),
+    inputValue: document.querySelector(".question-answer"),
     keyboard: document.getElementById("keyboard"),
     judgeSection: document.getElementById("judgeSection"),
     markCorrectBtn: document.getElementById("markCorrectBtn"),
     markWrongBtn: document.getElementById("markWrongBtn"),
+    prevBtn: document.getElementById("prevBtn"),
     abandonBtn: document.getElementById("abandonBtn"),
     resultTitle: document.getElementById("resultTitle"),
     resultMeta: document.getElementById("resultMeta"),
@@ -59,15 +61,15 @@
   };
 
   const keyboardKeys = [
-    { label: "7", value: "7" },
-    { label: "8", value: "8" },
-    { label: "9", value: "9" },
-    { label: "4", value: "4" },
-    { label: "5", value: "5" },
-    { label: "6", value: "6" },
     { label: "1", value: "1" },
     { label: "2", value: "2" },
     { label: "3", value: "3" },
+    { label: "4", value: "4" },
+    { label: "5", value: "5" },
+    { label: "6", value: "6" },
+    { label: "7", value: "7" },
+    { label: "8", value: "8" },
+    { label: "9", value: "9" },
     { label: "←", action: "backspace" },
     { label: "0", value: "0" },
     { label: "提交", action: "submit" }
@@ -108,6 +110,8 @@
     elements.markWrongBtn.addEventListener("click", function () {
       recordJudgement("wrong");
     });
+
+    elements.prevBtn.addEventListener("click", goPrevQuestion);
 
     elements.abandonBtn.addEventListener("click", abandonCurrentSession);
 
@@ -422,10 +426,14 @@
     elements.statusText.textContent = mode.description + " 当前进度会自动保存。";
     elements.timerLabel.textContent = mode.timerLabel;
     elements.questionText.textContent = questionsApi.formatQuestion(question);
+    elements.answerEquals.classList.toggle("hidden", mode.inputMode !== "numeric");
+    elements.inputValue.classList.toggle("hidden", mode.inputMode !== "numeric");
     elements.answerPanel.classList.toggle("hidden", !mode.showAnswer);
     elements.answerText.textContent = String(question.answer);
     elements.inputSection.classList.toggle("hidden", mode.inputMode !== "numeric");
     elements.judgeSection.classList.toggle("hidden", mode.inputMode !== "judge");
+    elements.prevBtn.classList.toggle("hidden", mode.inputMode !== "numeric");
+    elements.prevBtn.disabled = mode.inputMode !== "numeric" || session.currentIndex === 0;
     renderInputValue();
     updateTimerDisplay();
   }
@@ -565,6 +573,23 @@
       return;
     }
 
+    renderQuizPage();
+  }
+
+  function goPrevQuestion() {
+    if (!state.session) {
+      return;
+    }
+
+    const mode = config.MODES[state.session.mode];
+    if (mode.inputMode !== "numeric" || state.session.currentIndex === 0) {
+      return;
+    }
+
+    state.session.currentIndex -= 1;
+    const savedAnswer = state.session.responses[state.session.currentIndex];
+    state.session.inputValue = savedAnswer === null || savedAnswer === undefined ? "" : String(savedAnswer);
+    persistSession();
     renderQuizPage();
   }
 
@@ -897,6 +922,7 @@
   }
 
   function setActivePage(pageName) {
+    document.body.dataset.page = pageName;
     elements.startPage.classList.toggle("is-active", pageName === "start");
     elements.quizPage.classList.toggle("is-active", pageName === "quiz");
     elements.resultPage.classList.toggle("is-active", pageName === "result");
